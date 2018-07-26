@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    'use strict'
+    function swap(list){
+        var tmp = list[i];
+        list[i] = list[j];
+        list[j] = tmp;
+    }
+    var maxHeap = function(capacity) {
+        this._capacity = capacity + 1 || 101;
+        this._count = 0;
+        this._data = [];
+    }
+
+    maxHeap.prototype = {
+        //新添加的元素判断是否需要往上移动
+        _shiftUp: function(n){
+            if(n >= 2){
+                for(var i=this._count;i > 0;i=~~i/2){
+                    if(this._data[i] < this._data[n]){
+                        swap(this._data,i,n);
+                    }else{
+                        break;
+                    }
+                }
+            }
+        },
+
+        size:function(){
+            return this._count;
+        },
+
+        isEmpty:function(){
+            return this._count === 0;
+        },
+
+        insert:function(item){
+            this._data[++ this._count];
+        },
+
+
+    }
+</script>
+</body>
+</html>

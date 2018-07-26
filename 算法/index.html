@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    function listGenerator(count, start, end) {
+        res = [];
+        for (var i = 0; i < count; i++) {
+            res.push(start + Math.random() * (end - start));
+        }
+        return res;
+    }
+
+    function listGeneratorInt(count, start, end) {
+        res = [];
+        for (var i = 0; i < count; i++) {
+            res.push(Math.floor(start + Math.random() * (end - start)));
+        }
+        return res;
+    }
+
+    function timer(name,fn,arg){
+        var startTime = new Date().getTime();
+        var splice = Array.prototype.splice;
+        var result = fn.apply(this,[].concat(splice.call(arguments,2)));
+        console.log(name + ' duration : ', new Date().getTime() - startTime);
+        return result;
+    }
+
+    function checkList(){
+        function _check(lists,index,value){
+            for(var i=1;i<lists.length;i++){
+                if(lists[i][index] !== value)
+                    return false;
+            }
+            return true;
+        }
+
+        function _consoleErr(lists,index){
+            var res = [];
+            for(var i=0;i<lists.length;i++){
+                res.push('list'+i+'[ ' + index + ' ] = ' + lists[i][index]);
+            }
+            console.log('value dont equal ',res.join('\n'));
+        }
+        if(arguments.length){
+            var lists = arguments;
+            var limit = lists[0].length;
+            var list1;
+            for(var i=1;i<lists.length;i++){
+                if(lists[i].length !== limit){
+                    console.log('length not match at list'+(i+1));
+                }
+            }
+            list1 = lists[0];
+            for(var i=0;i<list1.length;i++){
+                if(!_check(lists,i,list1[i])){
+                    _consoleErr(lists,i);
+                }
+            }
+        }
+    }
+
+    function swap(list,i,j){
+        var tmp = list[i];
+        list[i] = list[j];
+        list[j] = tmp;
+    }
+
+
+    function insertSort(list, notShow) {
+        var tmp;
+        for (var i = 1; i < list.length; i++) {
+            for (var j = i; j > 0 && list[j - 1] > list[j]; j--) {
+                tmp = list[j];
+                list[j] = list[j - 1];
+                list[j - 1] = tmp;
+            }
+        }
+    }
+
+    function shellSort(list) {
+        var step = Math.floor(list.length / 2);
+        var len = list.length;
+        var tmp;
+
+        while (step > 1) {
+            for (var i = 0; i < step; i++) {
+                for (var j = i + step; j < len; j += step) {
+                    for (var k = j; k > 0 && list[k - step] > list[k]; k -= step) {
+                        tmp = list[k];
+                        list[k] = list[k - step];
+                        list[k - step] = tmp;
+                    }
+                }
+            }
+            step = Math.floor(step / 2);
+        }
+        insertSort(list, true);
+    }
+
+    function mergeSort(list) {
+        function swap(list, i, j) {
+            var tmp = list[i];
+            list[i] = list[j];
+            list[j] = tmp;
+        }
+
+        function __dispose(list, left, right) {
+            // r - l <= 15 使用插入排序较快
+            if (right - left <= 15) {
+                if (right - left <= 15) {
+                    for (var i = left + 1; i <= right; i++) {
+                        for (var j = i; j > left && list[j - 1] > list[j]; j--) {
+                            swap(list, j, j - 1);
+                        }
+                    }
+                }
+            } else if (left < right) {
+                var mid = left + Math.floor((right - left) / 2);
+                __dispose(list, left, mid);
+                __dispose(list, mid + 1, right);
+                __merge(list, left, mid, right);
+            }
+        }
+
+        function __merge(list, left, mid, right) {
+            var len = right - left + 1;
+            var curLeft = left;
+            var curRight = mid + 1;
+
+            for (var i = 0; i < len; i++) {
+                if ((curLeft <= mid && list[curLeft] <= list[curRight]) || curRight > right) {
+                    tmp[i] = list[curLeft++];
+
+                } else if ((curRight <= right && list[curRight] < list[curLeft]) || curLeft > mid) {
+                    tmp[i] = list[curRight++];
+
+                } else {
+                    console.log('merge error ! ', left, mid, right);
+                    break;
+                }
+            }
+
+            curLeft = left;
+            while (curLeft <= right) {
+                list[curLeft] = tmp[curLeft - left];
+                curLeft++;
+            }
+        }
+
+        var tmp = [];
+        __dispose(list, 0, list.length - 1);
+    }
+
+    function mergeSortB2U(list) {
+
+        function __merge(list, left, mid, right) {
+            // var mid = left + Math.ceil((right - left) / 2);
+            var len = right - left + 1;
+            var curLeft = left;
+            var curRight = mid + 1;
+
+            for (var i = 0; i < len; i++) {
+                if ((curLeft <= mid && list[curLeft] <= list[curRight]) || curRight > right) {
+                    tmp[i] = list[curLeft++];
+
+                } else if ((curRight <= right && list[curRight] < list[curLeft]) || curLeft > mid) {
+                    tmp[i] = list[curRight++];
+
+                } else {
+                    console.log('merge error ! ', left, mid, right);
+                    break;
+                }
+            }
+
+            curLeft = left;
+            while (curLeft <= right) {
+                list[curLeft] = tmp[curLeft - left];
+                curLeft++;
+            }
+        }
+
+        var tmp = [];
+        var len = list.length;
+
+        for (var size = 1; size <= len; size *= 2) {
+            for (var i = 0; i + size < len; i += size + size) {
+                // console.log(i,i+size - 1, Math.min(i+size+size-1,len-1));
+                __merge(list, i, i + size - 1, Math.min(i + size + size - 1, len - 1));
+            }
+        }
+    }
+
+    function quickSort(list) {
+        function swap(list, i, j) {
+            var tmp = list[i];
+            list[i] = list[j];
+            list[j] = tmp;
+        }
+
+        function _quickSort(list, left, right) {
+            // r - l <= 15 使用插入排序较快
+            if (right - left <= 15) {
+                for (var i = left + 1; i <= right; i++) {
+                    for (var j = i; j > left && list[j - 1] > list[j]; j--) {
+                        swap(list, j, j - 1);
+                    }
+                }
+
+            } else if (right - left >= 1) {
+
+                var midIndex = left;
+                var baseIndex = left;
+                for (var i = left + 1; i <= right; i++) {
+                    if (list[i] < list[baseIndex]) {
+                        swap(list, i, ++midIndex);
+                    }
+                }
+                swap(list, baseIndex, midIndex);
+                _quickSort(list, left, midIndex - 1);
+                _quickSort(list, midIndex + 1, right);
+            }
+        }
+
+        _quickSort(list, 0, list.length - 1);
+    }
+
+    // 对多重复 和 接近于有序的数据排序进行优化
+    function quickSort2(list) {
+        function swap(list, i, j) {
+            var tmp = list[i];
+            list[i] = list[j];
+            list[j] = tmp;
+        }
+
+        function _quickSort(list, left, right) {
+            // r - l <= 15 使用插入排序较快
+            if(right - left <= 15){
+                for(var i=left +1 ;i<=right;i++){
+                    for(var j= i;j>left && list[j -1] > list[j];j--){
+                        swap(list,j,j-1);
+                    }
+                }
+
+            } else{
+               var curLeft = left;
+               var curRight = right;
+               var baseIndex = left + Math.floor(Math.random() * (right - left));
+               var v = list[baseIndex];
+               swap(list,left,baseIndex);
+               while(true){
+                   while(curLeft <= right && list[curLeft] < v){
+                       curLeft ++;
+                   }
+                   while(curRight >= left && list[curRight] > v){
+                       curRight --;
+                   }
+
+                   if(curLeft > curRight) break;
+
+                   swap(list,curLeft++,curRight--);
+               }
+               swap(list,left , curRight);
+               _quickSort(list,left,curRight);
+               _quickSort(list,curLeft,right);
+            }
+        }
+        _quickSort(list, 0, list.length - 1);
+    }
+
+    function quickSort3Way(list){
+        function swap(list,i,j){
+            var tmp = list[i];
+            list[i] = list[j];
+            list[j] = tmp;
+        }
+
+        function _quickSort(list,left,right){
+            if(right - left >= 1 ){
+                var lt = left;
+                var gt = right +1;
+                var baseIndex = Math.floor(Math.random(right - left)) + left;
+                var v = list[baseIndex];
+                swap(list,left,baseIndex);
+                for(var i=lt;i<gt;i++){
+                    if(lt <= gt && list[i] < v){
+                        swap(list,++lt,i);
+
+                    }else if(lt <= gt && list[i] > v){
+                        swap(list,--gt,i--);
+
+                    }
+                }
+                swap(list,left,lt);
+                _quickSort(list,left,lt);
+                _quickSort(list,gt,right);
+            }
+        }
+
+        _quickSort(list,0,list.length -1 );
+    }
+
+    function getListByIndex(list,n){
+        function _quickSort(list,left,right){
+            if(right > left ){
+                var lt = left;
+                var gt = right + 1;
+                var baseIndex = Math.floor(Math.random(right - left)) + left;
+                var v = list[baseIndex];
+                swap(list,left,baseIndex);
+                for(var i=left + 1;i<gt;i++){
+                    if(list[i] < v){
+                        swap(list,i,++lt);
+                    }else if(list[i] > v){
+                        swap(list,i--,--gt)
+                    }
+                }
+                swap(list,left,lt);
+                if(n<lt){
+                    return _quickSort(list,left,lt);
+                }else if(n>gt){
+                    return _quickSort(list,gt,right);
+                }else {
+                    var index = lt + 1;
+                    return `list[${n}] = ${list[index]}`;
+                }
+            }else if(left === right){
+                return `list[${left}] = ${list[left]}`;
+            }
+        }
+
+        return _quickSort(list,0,list.length - 1);
+    }
+
+    var list = listGeneratorInt(10, 1, 100000),
+        list2 = [].concat(list),
+        list3 = [].concat(list),
+        list4 = [].concat(list),
+        list5 = [].concat(list),
+        list6 = [].concat(list),
+        list7 = [].concat(list),
+        list8 = [].concat(list),
+        list9 = [].concat(list);
+
+    var n=10;
+    // insertSort(list2)
+    // shellSort(list3);
+    // timer('mergeSort',mergeSort,list4);
+    // timer('mergeSortB2U',mergeSort,list5);
+    // timer('quickSort',quickSort,list6);
+    // timer('quickSort2',quickSort2,list7);
+    timer('quickSort3Way',quickSort3Way,list8);
+    // console.log(list);
+    // console.log(list3);
+    // console.log(list4);
+    // console.log(list5);
+    // console.log(list6);
+    // console.log(list7);
+    console.log(list8[n-1],timer('getListByIndex',getListByIndex,list9,n-1));
+    console.log(list8);
+    // console.log(list2);
+    // console.log(list4);
+    // console.log(list5);
+
+    // checkList(list4,list5,list8);
+
+
+</script>
+</body>
+</html>
